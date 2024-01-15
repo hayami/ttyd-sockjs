@@ -12,6 +12,8 @@ import { ZmodemAddon, FlowControl } from '../zmodem';
 import 'xterm/css/xterm.css';
 import worker from 'xterm-addon-image/lib/xterm-addon-image-worker';
 
+const { TtydSockJS: WebSocket } = require('./ttyd-sockjs');
+
 const imageWorkerUrl = window.URL.createObjectURL(new Blob([worker], { type: 'text/javascript' }));
 
 interface TtydTerminal extends Terminal {
