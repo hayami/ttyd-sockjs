@@ -8,7 +8,7 @@ if ((module as any).hot) {
     require('preact/debug');
 }
 
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
 const path = window.location.pathname.replace(/[\/]+$/, '');
 const wsUrl = [protocol, '//', window.location.host, path, '/ws', window.location.search].join('');
 const tokenUrl = [window.location.protocol, '//', window.location.host, path, '/token'].join('');
