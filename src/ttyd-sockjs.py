@@ -34,7 +34,7 @@ if __name__ == '__main__':
     app = web.Application()
     app.router.add_route('GET', '/', console)
     app.router.add_route('GET', '/token', token)
-    sockjs.add_endpoint(app, token_handler, name='console', prefix='/sockjs/')
+    sockjs.add_endpoint(app, token_handler, name='console')
 
     web.run_app(app, host='localhost', port=8000)
     # https://docs.aiohttp.org/en/stable/web_reference.html#utilities
