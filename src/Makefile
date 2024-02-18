@@ -1,5 +1,7 @@
 PYTHONUSERBASE	= $(PWD)/pybase
 
+MAKEFLAGS += --no-print-directory
+
 PHONY:	default
 default: run
 
@@ -18,4 +20,4 @@ pip-install:
 PHONY:	clean
 clean:
 	rm -f pip.pyz
-	rm -rf $(PYTHONUSERBASE	)
+	rm -rf $(PYTHONUSERBASE)
