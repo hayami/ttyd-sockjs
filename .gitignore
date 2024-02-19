@@ -1,5 +1,5 @@
-src/pip.pyz
-src/pybase/
-ttyd/ttyd-*/html/dist/
-ttyd/ttyd-*/html/node_modules/
-ttyd/ttyd-*/html/yarn.cache/
+/src/pip.pyz
+/src/pybase/
+/ttyd/ttyd-*.tar.gz
+/ttyd/ttyd-*/
+!/ttyd/ttyd-*-extra
