@@ -1,0 +1,17 @@
+Date:   Mon Jan 15 22:41:47 2024 +0900
+
+    Use '/sockjs' instead of '/ws'
+
+diff --git a/src/components/app.tsx b/src/components/app.tsx
+--- a/src/components/app.tsx
++++ b/src/components/app.tsx
+@@ -10,7 +10,7 @@ if ((module as any).hot) {
+ 
+ const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+ const path = window.location.pathname.replace(/[\/]+$/, '');
+-const wsUrl = [protocol, '//', window.location.host, path, '/ws', window.location.search].join('');
++const wsUrl = [protocol, '//', window.location.host, path, '/sockjs', window.location.search].join('');
+ const tokenUrl = [window.location.protocol, '//', window.location.host, path, '/token'].join('');
+ const clientOptions = {
+     rendererType: 'webgl',
+
