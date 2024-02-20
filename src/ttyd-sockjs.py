@@ -12,12 +12,24 @@ CONSOLE_HTML = open(os.path.join(os.path.dirname(__file__), '../ttyd/ttyd-1.7.2/
 async def token_handler(msg, session):
     if session.manager is None:
         return
-    if msg.type == sockjs.MSG_OPEN:
-        print("MSG_OPEN\n")
-    elif msg.type == sockjs.MSG_MESSAGE:
-        print("MSG_MESSAGE: %s\n" % msg.data)
-    elif msg.type == sockjs.MSG_CLOSED:
-        print("MSG_CLOSED\n")
+
+    match msg.type:
+        case sockjs.MSG_OPEN:
+            print("MSG_OPEN\n")
+
+        case sockjs.MSG_MESSAGE:
+            print("MSG_MESSAGE: %s\n" % msg.data)
+            session.send("1/bin/sh (ttyd-MIKADO)")
+            print("sent: 1/bin/sh...\n")
+
+        case sockjs.MSG_CLOSE:
+            print("MSG_CLOSE\n")
+
+        case sockjs.MSG_CLOSED:
+            print("MSG_CLOSED\n")
+
+        case _:
+            print("unexpected msg.type\n")
 
 
 def console(request):
