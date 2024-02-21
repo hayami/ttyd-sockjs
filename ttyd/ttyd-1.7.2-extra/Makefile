@@ -34,7 +34,7 @@ patch:
 	cd $@ && find . -name '.git*' -exec rm -rf {} +
 
 $(DIR)/yarn.install.done: ../ttyd-$(V)
-	install dot.yarnrc $(DIR)/.yarnrc
+	cat dot.yarnrc > $(DIR)/.yarnrc
 	$(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
 	$(MAKE) files='patch-1*' patch
@@ -42,13 +42,13 @@ $(DIR)/yarn.install.done: ../ttyd-$(V)
 
 $(DIR)/src/components/terminal/ttyd-sockjs.js: $(DIR)/yarn.install.done
 	test -f $@ || $(MAKE) files='patch-2*' patch
-	install ttyd-sockjs.js $@
+	cat ttyd-sockjs.js > $@
 
 $(DIR)/dist/inline.html: $(DIR)/src/components/terminal/ttyd-sockjs.js
-	cd $(DIR) && yarn inline
+	cd $(DIR) && yarn run inline
 
 $(DIR)/../src/html.h: $(DIR)/src/components/terminal/ttyd-sockjs.js
-	cd $(DIR) && yarn build
+	cd $(DIR) && yarn run build
 
 .PHONY: distclean
 distclean:
