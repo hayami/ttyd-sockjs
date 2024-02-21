@@ -7,6 +7,11 @@ MAKEFLAGS += --no-print-directory
 .PHONY:	default
 default: yarn-build
 
+.PHONY:	distclean
+distclean:
+	rm -rf ../ttyd-$(V)
+	rm -f ../ttyd-$(V).tar.gz
+
 .PHONY:	yarn-install
 yarn-install: $(DIR)/yarn.install.done
 
@@ -49,8 +54,3 @@ $(DIR)/dist/inline.html: $(DIR)/src/components/terminal/ttyd-sockjs.js
 
 $(DIR)/../src/html.h: $(DIR)/src/components/terminal/ttyd-sockjs.js
 	cd $(DIR) && yarn run build
-
-.PHONY: distclean
-distclean:
-	rm -rf ../ttyd-$(V)
-	rm -f ../ttyd-$(V).tar.gz
