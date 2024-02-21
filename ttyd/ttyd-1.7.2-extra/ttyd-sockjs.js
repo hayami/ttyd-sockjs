@@ -35,6 +35,11 @@ function TtydSockJS(url, protocols) {
 TtydSockJS.prototype = Object.create(SockJS.prototype);
 TtydSockJS.prototype.constructor = TtydSockJS;
 
+TtydSockJS.CONNECTING = SockJS.CONNECTING;
+TtydSockJS.OPEN = SockJS.OPEN;
+TtydSockJS.CLOSING = SockJS.CLOSING;
+TtydSockJS.CLOSED = SockJS.CLOSED;
+
 TtydSockJS.prototype.send = function(data) {
     if (data.constructor === Uint8Array) {
         data = this.textDecoder.decode(data);
