@@ -2,6 +2,9 @@ V	= 1.7.2
 ORIGTGZ	= https://github.com/tsl0922/ttyd/archive/refs/tags/$(V).tar.gz
 DIR	= ../ttyd-$(V)/html
 
+UMASK	= $(shell umask)
+FMODE	= $(shell awk 'END {printf("0%o", and(0644, compl(0$(UMASK))))}' < /dev/null)
+
 MAKEFLAGS += --no-print-directory
 
 .PHONY:	default
@@ -39,7 +42,7 @@ patch:
 	cd $@ && find . -name '.git*' -exec rm -rf {} +
 
 $(DIR)/yarn.install.done: ../ttyd-$(V)
-	install dot.yarnrc $(DIR)/.yarnrc
+	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
 	$(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
 	$(MAKE) files='patch-1*' patch
@@ -47,7 +50,7 @@ $(DIR)/yarn.install.done: ../ttyd-$(V)
 
 $(DIR)/src/components/terminal/ttyd-sockjs.js: $(DIR)/yarn.install.done
 	test -f $@ || $(MAKE) files='patch-2*' patch
-	install ttyd-sockjs.js $@
+	install -m $(FMODE) ttyd-sockjs.js $@
 
 $(DIR)/dist/inline.html: $(DIR)/src/components/terminal/ttyd-sockjs.js
 	cd $(DIR) && yarn run inline
