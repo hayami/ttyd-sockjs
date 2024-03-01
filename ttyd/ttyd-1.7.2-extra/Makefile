@@ -24,14 +24,6 @@ yarn-build: $(DIR)/dist/inline.html
 .PHONY:	yarn-build-all
 yarn-build-all: $(DIR)/../src/html.h
 
-.PHONY:	patch
-patch:
-	@set -e;					\
-	echo "patch files to be applied:" $(files);	\
-	for f in $(files); do				\
-	    test -f "$$f" || continue;			\
-	    (cd $(DIR) && patch -p1) < "$$f";		\
-	done
 
 ../ttyd-$(V).tar.gz:
 	curl -o $@ -L $(ORIGTGZ)
@@ -41,19 +33,25 @@ patch:
 	cd $@ && chmod -R go-rwxst . && chmod -R a+rX .
 	cd $@ && find . -name '.git*' -exec rm -rf {} +
 
+.PHONY:	patch
+patch:
+	@set -e;					\
+	echo "patch files to be applied:" $(files);	\
+	for f in $(files); do				\
+	    test -f "$$f" || continue;			\
+	    (cd $(DIR) && patch -p1) < "$$f";		\
+	done
+
 $(DIR)/yarn.install.done: ../ttyd-$(V)
 	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
-	$(MAKE) files='patch-0*' patch
+	[ -n "$(nopatch)" ] || $(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
-	$(MAKE) files='patch-1*' patch
+	[ -n "$(nopatch)" ] || $(MAKE) files='patch-1*' patch
+	[ -n "$(nopatch)" ] || install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/terminal/
 	touch $@
 
-$(DIR)/src/components/terminal/ttyd-sockjs.js: $(DIR)/yarn.install.done
-	test -f $@ || $(MAKE) files='patch-2*' patch
-	install -m $(FMODE) ttyd-sockjs.js $@
-
-$(DIR)/dist/inline.html: $(DIR)/src/components/terminal/ttyd-sockjs.js
+$(DIR)/dist/inline.html: $(DIR)/yarn.install.done
 	cd $(DIR) && yarn run inline
 
-$(DIR)/../src/html.h: $(DIR)/src/components/terminal/ttyd-sockjs.js
+$(DIR)/../src/html.h: $(DIR)/yarn.install.done
 	cd $(DIR) && yarn run build
