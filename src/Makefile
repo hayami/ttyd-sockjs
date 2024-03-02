@@ -1,4 +1,4 @@
-PYTHONUSERBASE	= $(PWD)/pybase
+PYTHONUSERBASE	= $(PWD)/pyuser
 
 MAKEFLAGS += --no-print-directory
 
