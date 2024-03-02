@@ -1,5 +1,5 @@
 /src/pip.pyz
-/src/pybase/
+/src/pyuser/
 /ttyd/ttyd-*.tar.gz
 /ttyd/ttyd-*/
 !/ttyd/ttyd-*-extra
