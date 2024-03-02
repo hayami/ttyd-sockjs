@@ -32,50 +32,55 @@ class TtydServer:
         async for msg in ws:
             match msg.type:
                  case WSMsgType.BINARY:
-                     print('WSMsgType.BINARY: ', end='')
-                     await self._chat(msg.data, ws.send_bytes, True);
+                     print('WSMsgType.BINARY: "%s"' % msg.data.decode())
+                     ret = self._chat(msg.data.decode());
+                     for data in ret:
+                         if type(data) == str:
+                             await ws.send_bytes(data.encode())
+                         else:
+                             if data == 0:
+                                 await ws.close()
                  case _:
-                     print('unexpected msg.type: 0x%x (WSMsgTye)' % msg.type)
+                     print('ERROR: WSMsgType: unexpected msg.type: 0x%x' % msg.type)
 
         await ws.close()
         print('WebSoocket: connection closed')
         return ws
 
-    async def sockjs_handler(self, msg, session):
+    def sockjs_handler(self, msg, session):
         if session.manager is None:
             return
 
         match msg.type:
             case sockjs.MSG_OPEN:
                 print('SockJS: connection ready')
+
             case sockjs.MSG_MESSAGE:
-                print('sockjs.MSG_MESSAGE: ', end='')
-                await self._chat(msg.data, session.send, False)
+                print('sockjs.MSG_MESSAGE: "%s"' % msg.data)
+                ret = self._chat(msg.data)
+                for data in ret:
+                    if type(data) == str:
+                        session.send(data)
+                    else:
+                        if data == 0:
+                            session.close()
+
             case sockjs.MSG_CLOSE:
                 print('SockJS: connection closing')
+
             case sockjs.MSG_CLOSED:
                 print('SockJS: connection closed')
+
             case _:
-                 print('unexpected msg.type: %d (sockjs)' % msg.type)
+                print('ERROR: SockJS: unknown msg.type: %d' % msg.type)
 
-    async def _chat_send(self, data, sendfunc, bin):
-        if bin:
-            await sendfunc(data.encode('ascii'))
-        else:
-            # XXX await XXX
-            sendfunc(data)
-
-    async def _chat(self, data, sendfunc, isBytes):
-        if isBytes:
-            data = data.decode()
-
-        print(data)
+    def _chat(self, data):
         if data[0] == '{':
-            await self._chat_send('1/bin/sh (ttyd-MIKADO)', sendfunc, isBytes)
-            await self._chat_send('2{}', sendfunc, isBytes)
-            await self._chat_send('0prompt$ ', sendfunc, isBytes)
+            return ['1/bin/sh (ttyd-MIKADO)',
+                    '2{}',
+                    '0prompt$ ']
         else:
-            await self._chat_send('0{}'.format(data[1:]), sendfunc, isBytes)
+            return ['0{}'.format(data[1:])]
 
 
 if __name__ == '__main__':
