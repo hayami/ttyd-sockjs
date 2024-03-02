@@ -6,7 +6,7 @@ from aiohttp import web, WSMsgType
 import sockjs
 
 
-TOPPAGE_HTML = open(os.path.join(os.path.dirname(__file__), '../ttyd/ttyd-1.7.2/html/dist/inline.html'), 'rb').read()
+TOPPAGE_HTML = open(os.path.join(os.path.dirname(__file__), 'inline.html'), 'rb').read()
 
 NOPATCH_HTML = open(os.path.join(os.path.dirname(__file__), 'nopatch.html'), 'rb').read()
 
