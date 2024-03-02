@@ -11,9 +11,13 @@ MAKEFLAGS += --no-print-directory
 default: yarn-build
 
 .PHONY:	distclean
-distclean:
-	rm -rf ../ttyd-$(V)
+distclean: clean
 	rm -f ../ttyd-$(V).tar.gz
+	rm -rf ../ttyd-$(V)-yarn.cache
+
+.PHONY:	clean
+clean:
+	rm -rf ../ttyd-$(V)
 
 .PHONY:	yarn-install
 yarn-install: $(DIR)/yarn.install.done
@@ -44,6 +48,7 @@ patch:
 
 $(DIR)/yarn.install.done: ../ttyd-$(V)
 	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
+	sed -i 's#^\(cache-folder\) .*#\1 ../../ttyd-$(V)-yarn.cache#' $(DIR)/.yarnrc
 	[ -n "$(nopatch)" ] || $(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
 	[ -n "$(nopatch)" ] || $(MAKE) files='patch-1*' patch
