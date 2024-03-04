@@ -41,7 +41,7 @@ class TtydServer:
                              if data == 0:
                                  await ws.close()
                  case _:
-                     print('ERROR: WSMsgType: unexpected msg.type: 0x%x' % msg.type)
+                     print('FIXME: WSMsgType: unexpected msg.type: 0x%x' % msg.type)
 
         await ws.close()
         print('WebSoocket: connection closed')
@@ -72,7 +72,7 @@ class TtydServer:
                 print('SockJS: connection closed')
 
             case _:
-                print('ERROR: SockJS: unknown msg.type: %d' % msg.type)
+                print('FIXME: SockJS: unknown msg.type: %d' % msg.type)
 
     def _chat(self, data):
         if data[0] == '{':
@@ -96,4 +96,8 @@ if __name__ == '__main__':
         app.add_routes([web.get('/ws', ttyd.websocket_handler)])
 
     web.run_app(app, host='localhost', port=8000)
+    #web.run_app(app, path='/home/hayami/tmp/unix')
     # https://docs.aiohttp.org/en/stable/web_reference.html#utilities
+    # https://stackoverflow.com/a/46377545
+    #   unix:/var/sockets/$1.sock|http://%{HTTP_HOST}/
+    #   あらかじめ umask 077 とかしておけば unix-soket の許可モードを制御できる
