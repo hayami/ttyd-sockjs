@@ -1,3 +1,4 @@
+import argparse
 #import json
 #import logging
 import os
@@ -86,7 +87,12 @@ class TtydServer:
 if __name__ == '__main__':
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
-    ttyd = TtydServer(True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--sockjs', default=True, dest='use_sockjs',
+                        action=argparse.BooleanOptionalAction, help='use SockJS')
+    args = parser.parse_args();
+
+    ttyd = TtydServer(use_sockjs=args.use_sockjs)
     app = web.Application()
     app.add_routes([web.get('/', ttyd.toppage_handler),
                     web.get('/token', ttyd.token_handler)])
