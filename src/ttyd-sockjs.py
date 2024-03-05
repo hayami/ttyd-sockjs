@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.11
 import argparse
 #import json
 #import logging
@@ -48,7 +49,7 @@ class TtydServer:
         print('WebSoocket: connection closed')
         return ws
 
-    def sockjs_handler(self, msg, session):
+    async def sockjs_handler(self, msg, session):
         if session.manager is None:
             return
 
