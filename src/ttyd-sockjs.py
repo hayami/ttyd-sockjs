@@ -13,7 +13,8 @@ TOPPAGE_HTML = open(os.path.join(os.path.dirname(__file__), 'inline.html'), 'rb'
 NOPATCH_HTML = open(os.path.join(os.path.dirname(__file__), 'nopatch.html'), 'rb').read()
 
 class TtydServer:
-    def __init__(self, use_sockjs=True):
+    def __init__(self, once=False, use_sockjs=True):
+        self.one_time_session = None if once else False
         self.use_sockjs = use_sockjs
 
     async def toppage_handler(self, request):
@@ -53,6 +54,15 @@ class TtydServer:
         if session.manager is None:
             return
 
+        if self.one_time_session is not False:
+            if self.one_time_session is None:
+                self.one_time_session = session
+            elif self.one_time_session is session:
+                pass
+            else:
+                session.close()
+                return
+
         match msg.type:
             case sockjs.MSG_OPEN:
                 print('SockJS: connection ready')
@@ -72,6 +82,9 @@ class TtydServer:
 
             case sockjs.MSG_CLOSED:
                 print('SockJS: connection closed')
+                if self.one_time_session:
+                    await session.manager.clear()
+                    raise web.GracefulExit(0)	# TODO: スタックトレースが表示される
 
             case _:
                 print('FIXME: SockJS: unknown msg.type: %d' % msg.type)
@@ -88,12 +101,14 @@ class TtydServer:
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--sockjs', default=True, dest='use_sockjs',
-                        action=argparse.BooleanOptionalAction, help='use SockJS')
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-o', '--once', help='accept only one client and exit on disconnection',
+                        default=False, dest='once', action='store_true')
+    parser.add_argument('--no-sockjs', help='use WebSocket instead of SockJS',
+                        default=False, dest='no_sockjs', action='store_true')
     args = parser.parse_args();
 
-    ttyd = TtydServer(use_sockjs=args.use_sockjs)
+    ttyd = TtydServer(once=args.once, use_sockjs=not(args.no_sockjs))
     app = web.Application()
     app.add_routes([web.get('/', ttyd.toppage_handler),
                     web.get('/token', ttyd.token_handler)])
