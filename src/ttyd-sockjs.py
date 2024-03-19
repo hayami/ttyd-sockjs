@@ -14,8 +14,8 @@ NOPATCH_HTML = open(os.path.join(os.path.dirname(__file__), 'nopatch.html'), 'rb
 
 class TtydServer:
     def __init__(self, once=False, use_sockjs=True):
-        self.one_time_session = None if once else False
-        self.use_sockjs = use_sockjs
+        self.one_time_session = bool(once)
+        self.use_sockjs = bool(use_sockjs)
 
     async def toppage_handler(self, request):
         if self.use_sockjs:
@@ -31,6 +31,8 @@ class TtydServer:
         ws = web.WebSocketResponse()
         await ws.prepare(request)
         print('WebSocket: connection ready')
+
+        # TODO: self.one_time_session にまつわる実装
 
         async for msg in ws:
             match msg.type:
@@ -54,8 +56,8 @@ class TtydServer:
         if session.manager is None:
             return
 
-        if self.one_time_session is not False:
-            if self.one_time_session is None:
+        if self.one_time_session:
+            if self.one_time_session is True:
                 self.one_time_session = session
             elif self.one_time_session is session:
                 pass
