@@ -85,7 +85,7 @@ class TtydServer:
             return ['0{}'.format(data[1:])]
 
 
-if __name__ == '__main__':
+def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
     parser = argparse.ArgumentParser()
@@ -108,3 +108,7 @@ if __name__ == '__main__':
     # https://stackoverflow.com/a/46377545
     #   unix:/var/sockets/$1.sock|http://%{HTTP_HOST}/
     #   あらかじめ umask 077 とかしておけば unix-soket の許可モードを制御できる
+
+
+if __name__ == '__main__':
+    main()
