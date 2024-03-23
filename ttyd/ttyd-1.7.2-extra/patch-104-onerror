@@ -6,7 +6,7 @@ Date:   Sat Mar 23 23:52:41 2024 +0900
     どちらか片方を適用すればよい。
     どちらを適用しても同じような動きになるはず。
 
-    参考: https://github.com/sockjs/sockjs-client/issues/176
+    参考: https://github.com/sockjs/sockjs-client/issues/176#issuecomment-45404353
           SockJS client not emitting close event when disconnected ungracefully #176
 
     * sockjs-client で対処する場合
