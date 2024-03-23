@@ -5,37 +5,31 @@ DIR	= ../ttyd-$(V)/html
 UMASK	= $(shell umask)
 FMODE	= $(shell awk 'END {printf("0%o", and(0644, compl(0$(UMASK))))}' < /dev/null)
 
+ifeq ($(build),all)
+YARN_RUN_TARGET = build
+else
+YARN_RUN_TARGET = inline
+endif
+
 MAKEFLAGS += --no-print-directory
 
-.PHONY:	default
-default: yarn-build
 
-.PHONY:	distclean
-distclean: clean
-	rm -f ../ttyd-$(V).tar.gz
-	rm -rf ../ttyd-$(V)-yarn.cache
+.PHONY:	default
+default: all
+
+.PHONY:	all
+all:
+	$(MAKE) $(DIR)/extra/inline-sockjs-unused.html
+	$(MAKE) $(DIR)/extra/inline-sockjs-enabled.html
 
 .PHONY:	clean
 clean:
 	rm -rf ../ttyd-$(V)
 
-.PHONY:	yarn-install
-yarn-install: $(DIR)/yarn.install.done
-
-.PHONY:	yarn-build
-yarn-build: $(DIR)/dist/inline.html
-
-.PHONY:	yarn-build-all
-yarn-build-all: $(DIR)/../src/html.h
-
-
-../ttyd-$(V).tar.gz:
-	curl -o $@ -L $(ORIGTGZ)
-
-../ttyd-$(V): ../ttyd-$(V).tar.gz
-	cd .. && tar -xpzf ttyd-$(V).tar.gz
-	cd $@ && chmod -R go-rwxst . && chmod -R a+rX .
-	cd $@ && find . -name '.git*' -exec rm -rf {} +
+.PHONY:	distclean
+distclean: clean
+	rm -f ../ttyd-$(V).tar.gz
+	rm -rf ../ttyd-$(V)-yarn.cache
 
 .PHONY:	patch
 patch:
@@ -46,17 +40,34 @@ patch:
 	    (cd $(DIR) && patch -p1) < "$$f";		\
 	done
 
-$(DIR)/yarn.install.done: ../ttyd-$(V)
+
+../ttyd-$(V).tar.gz:
+	curl -o $@ -L $(ORIGTGZ)
+
+../ttyd-$(V): ../ttyd-$(V).tar.gz
+	cd .. && tar -xpzf ttyd-$(V).tar.gz
+	cd $@ && chmod -R go-rwxst . && chmod -R a+rX .
+	cd $@ && find . -name '.git*' -exec rm -rf {} +
+
+$(DIR)/extra/yarn.install.done: ../ttyd-$(V)
 	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
 	sed -i 's#^\(cache-folder\) .*#\1 ../../ttyd-$(V)-yarn.cache#' $(DIR)/.yarnrc
-	[ -n "$(nopatch)" ] || $(MAKE) files='patch-0*' patch
+	$(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
-	[ -n "$(nopatch)" ] || $(MAKE) files='patch-1*' patch
-	[ -n "$(nopatch)" ] || install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/terminal/
+	mkdir -p $(@D)
 	touch $@
 
-$(DIR)/dist/inline.html: $(DIR)/yarn.install.done
-	cd $(DIR) && yarn run inline
+$(DIR)/extra/inline-sockjs-unused.html: $(DIR)/extra/yarn.install.done
+	[ ! -f $(DIR)/extra/patch-1xx.applied ]
+	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
+	install -m $(FMODE) $(DIR)/dist/inline.html $@
 
-$(DIR)/../src/html.h: $(DIR)/yarn.install.done
-	cd $(DIR) && yarn run build
+$(DIR)/extra/patch-1xx.applied: $(DIR)/extra/yarn.install.done
+	$(MAKE) files='patch-1*' patch
+	install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/terminal/
+	touch $@
+
+$(DIR)/extra/inline-sockjs-enabled.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
+	[ -f $(DIR)/extra/patch-1xx.applied ]
+	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
+	install -m $(FMODE) $(DIR)/dist/inline.html $@
