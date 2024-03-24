@@ -15,10 +15,10 @@ MAKEFLAGS += --no-print-directory
 
 
 .PHONY:	default
-default: all
+default: both-inline.html
 
-.PHONY:	all
-all:
+.PHONY:	both-inline.html
+both-inline.html:
 	$(MAKE) $(DIR)/extra/inline-sockjs-unused.html
 	$(MAKE) $(DIR)/extra/inline-sockjs-enabled.html
 
@@ -49,10 +49,14 @@ patch:
 	cd $@ && chmod -R go-rwxst . && chmod -R a+rX .
 	cd $@ && find . -name '.git*' -exec rm -rf {} +
 
-$(DIR)/extra/yarn.install.done: ../ttyd-$(V)
+$(DIR)/extra/patch-0xx.applied: ../ttyd-$(V)
+	$(MAKE) files='patch-0*' patch
+	mkdir -p $(@D)
+	touch $@
+
+$(DIR)/extra/yarn.install.done: $(DIR)/extra/patch-0xx.applied
 	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
 	sed -i 's#^\(cache-folder\) .*#\1 ../../ttyd-$(V)-yarn.cache#' $(DIR)/.yarnrc
-	$(MAKE) files='patch-0*' patch
 	cd $(DIR) && yarn install
 	mkdir -p $(@D)
 	touch $@
