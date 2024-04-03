@@ -8,9 +8,9 @@ from aiohttp import web, WSMsgType
 import sockjs
 
 
-ENABLED_HTML = open(os.path.join(os.path.dirname(__file__), '../ttyd/ttyd-1.7.2/html/extra/inline-sockjs-enabled.html'), 'rb').read()
+ENABLED_HTML = open(os.path.join(os.path.dirname(__file__), 'inline-sockjs-enabled.html'), 'rb').read()
 
-UNUSED_HTML = open(os.path.join(os.path.dirname(__file__), '../ttyd/ttyd-1.7.2/html/extra/inline-sockjs-unused.html'), 'rb').read()
+UNUSED_HTML = open(os.path.join(os.path.dirname(__file__), 'inline-sockjs-unused.html'), 'rb').read()
 
 class TtydServer:
     def __init__(self, once=False, use_sockjs=True):
@@ -103,11 +103,13 @@ class TtydServer:
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-o', '--once', help='accept only one client and exit on disconnection',
-                        default=False, dest='once', action='store_true')
-    parser.add_argument('--no-sockjs', help='use WebSocket instead of SockJS',
-                        default=False, dest='no_sockjs', action='store_true')
+    ttyd_formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=29)
+    parser = argparse.ArgumentParser(formatter_class=ttyd_formatter_class)
+    parser.add_argument('--host',             default='::1', dest='host',      action='store',      help='IP address or hostname to bind to')
+    parser.add_argument('-i', '--interface',  default=None,  dest='sockpath',  action='store',      help='UNIX domain socket path', metavar='PATH')
+    parser.add_argument('--no-sockjs',        default=False, dest='no_sockjs', action='store_true', help='Use WebSocket instead of SockJS')
+    parser.add_argument('-o', '--once',       default=False, dest='once',      action='store_true', help='Accept only one client and exit on disconnection')
+    parser.add_argument('-p', '--port',       default=7681,  dest='port',      action='store',      help='Port number to listen')
     args = parser.parse_args();
 
     ttyd = TtydServer(once=args.once, use_sockjs=not(args.no_sockjs))
@@ -119,13 +121,10 @@ def main():
     else:
         app.add_routes([web.get('/ws', ttyd.websocket_handler)])
 
-    web.run_app(app, host='localhost', port=8000)
-    #web.run_app(app, path='/home/hayami/tmp/unix')
-    # https://docs.aiohttp.org/en/stable/web_reference.html#utilities
-    # https://stackoverflow.com/a/46377545
-    #   unix:/var/sockets/$1.sock|http://%{HTTP_HOST}/
-    #   あらかじめ umask 077 とかしておけば unix-soket の許可モードを制御できる
-
+    if args.sockpath:
+        web.run_app(app, path=args.sockpath)
+    else:
+        web.run_app(app, host=args.host, port=args.port)
 
 if __name__ == '__main__':
     main()
