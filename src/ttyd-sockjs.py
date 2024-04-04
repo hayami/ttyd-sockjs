@@ -102,14 +102,16 @@ class TtydServer:
 
 def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+    #ttyd_formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=29)
+    #parser = argparse.ArgumentParser(formatter_class=ttyd_formatter_class)
 
-    ttyd_formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=29)
-    parser = argparse.ArgumentParser(formatter_class=ttyd_formatter_class)
-    parser.add_argument('--host',             default='::1', dest='host',      action='store',      help='IP address or hostname to bind to')
-    parser.add_argument('-i', '--interface',  default=None,  dest='sockpath',  action='store',      help='UNIX domain socket path', metavar='PATH')
-    parser.add_argument('--no-sockjs',        default=False, dest='no_sockjs', action='store_true', help='Use WebSocket instead of SockJS')
-    parser.add_argument('-o', '--once',       default=False, dest='once',      action='store_true', help='Accept only one client and exit on disconnection')
-    parser.add_argument('-p', '--port',       default=7681,  dest='port',      action='store',      help='Port number to listen')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--host',       default='::1', dest='host',      action='store',      help='IP address or hostname to bind to (default: ::1)')
+    parser.add_argument('-i',           default=None,  dest='sockpath',  action='store',      help='UNIX domain socket path', metavar='PATH')
+    parser.add_argument('--interface',  default=None,  dest='sockpath',  action='store',      help='(same as above)', metavar='PATH')
+    parser.add_argument('--no-sockjs',  default=False, dest='no_sockjs', action='store_true', help='Use WebSocket instead of SockJS')
+    parser.add_argument('-o', '--once', default=False, dest='once',      action='store_true', help='Accept only one client and exit on disconnection')
+    parser.add_argument('-p', '--port', default=7681,  dest='port',      action='store',      help='Port number or name to listen (default: 7681)')
     args = parser.parse_args();
 
     ttyd = TtydServer(once=args.once, use_sockjs=not(args.no_sockjs))
