@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script>
+    function debug(msg) {
+        const div = document.getElementById("console");
+        const span = document.createElement("span");
+        span.innerHTML = msg + '<br>';
+        div.appendChild(span);
+    }
+
+    function main() {
+        socket = new SockJS("http://localhost:7681/sockjs");
+        socket.addEventListener("open", function() {
+            debug("onOpen");
+            socket.send("0HELLO");
+        });
+        socket.addEventListener("message", function(e) {
+            const msg = e.data;
+            debug("onMessage: " + msg);
+            setTimeout(function() {
+                socket.send(msg);
+            }, 1000);
+        });
+        socket.addEventListener("close", function() {
+            debug("onClose");
+        });
+        socket.addEventListener("error", function() {
+            debug("onError");
+        });
+    }
+
+    window.onload = main;
+</script>
+</head>
+<body>
+make run<br>
+http://[::1]:7681<br>
+<br>
+<div id="console"></div>
+</body>
+</html>
