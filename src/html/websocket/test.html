@@ -14,7 +14,12 @@
 	const textEncoder = new TextEncoder();
         const textDecoder = new TextDecoder();
 
-        socket = new WebSocket("ws://localhost:7681/ws");
+        const loc = document.location;
+        debug(loc.pathname); debug("");
+
+        const url = loc.origin + loc.pathname.replace(/\/$/, "") + "/ws" + loc.search + loc.hash;
+        socket = new WebSocket(url);
+
         socket.binaryType = 'arraybuffer';
         socket.addEventListener("open", function() {
             debug("onOpen");

@@ -12,7 +12,11 @@
     }
 
     function main() {
-        socket = new SockJS("http://localhost:7681/sockjs");
+        const loc = document.location;
+        debug(loc.pathname); debug("");
+
+        const url = loc.origin + loc.pathname.replace(/\/$/, "") + "/sockjs" + loc.search + loc.hash;
+        socket = new SockJS(url);
         socket.addEventListener("open", function() {
             debug("onOpen");
             socket.send("0HELLO");
@@ -38,6 +42,10 @@
 <body>
 make run<br>
 http://[::1]:7681<br>
+<br>
+make args="-i $HOME/tmp/unix" run<br>
+https://soba.undo.jp/a/b/c/-?sock=tmp/unix (or)<br>
+https://soba.undo.jp/a/b/c/-/?sock=tmp/unix<br>
 <br>
 <div id="console"></div>
 </body>
