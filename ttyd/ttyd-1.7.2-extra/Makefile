@@ -19,8 +19,8 @@ default: both-inline.html
 
 .PHONY:	both-inline.html
 both-inline.html:
-	$(MAKE) $(DIR)/extra/inline-sockjs-unused.html
-	$(MAKE) $(DIR)/extra/inline-sockjs-enabled.html
+	$(MAKE) $(DIR)/extra/inline-websocket.html
+	$(MAKE) $(DIR)/extra/inline-sockjs.html
 
 .PHONY:	clean
 clean:
@@ -61,7 +61,7 @@ $(DIR)/extra/yarn.install.done: $(DIR)/extra/patch-0xx.applied
 	mkdir -p $(@D)
 	touch $@
 
-$(DIR)/extra/inline-sockjs-unused.html: $(DIR)/extra/yarn.install.done
+$(DIR)/extra/inline-websocket.html: $(DIR)/extra/yarn.install.done
 	[ ! -f $(DIR)/extra/patch-1xx.applied ]
 	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
 	install -m $(FMODE) $(DIR)/dist/inline.html $@
@@ -71,7 +71,7 @@ $(DIR)/extra/patch-1xx.applied: $(DIR)/extra/yarn.install.done
 	install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/terminal/
 	touch $@
 
-$(DIR)/extra/inline-sockjs-enabled.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
+$(DIR)/extra/inline-sockjs.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
 	[ -f $(DIR)/extra/patch-1xx.applied ]
 	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
 	install -m $(FMODE) $(DIR)/dist/inline.html $@
