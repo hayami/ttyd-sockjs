@@ -56,7 +56,7 @@ $(DIR)/extra/patch-0xx.applied: ../ttyd-$(V)
 
 $(DIR)/extra/yarn.install.done: $(DIR)/extra/patch-0xx.applied
 	install -m $(FMODE) dot.yarnrc $(DIR)/.yarnrc
-	sed -i 's#^\(cache-folder\) .*#\1 ../../ttyd-$(V)-yarn.cache#' $(DIR)/.yarnrc
+	sed -i.orig 's#^\(cache-folder\) .*#\1 ../../ttyd-$(V)-yarn.cache#' $(DIR)/.yarnrc
 	cd $(DIR) && yarn install
 	mkdir -p $(@D)
 	touch $@
