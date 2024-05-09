@@ -3,7 +3,7 @@ ORIGTGZ	= https://github.com/tsl0922/ttyd/archive/refs/tags/$(V).tar.gz
 DIR	= ../ttyd-$(V)/html
 
 UMASK	= $(shell umask)
-FMODE	= $(shell awk 'END {printf("0%o", and(0644, compl(0$(UMASK))))}' < /dev/null)
+FMODE	= $(shell perl -e 'printf("0%o", 0644 & ~(umask()));')
 
 ifeq ($(build),all)
 YARN_RUN_TARGET = build
