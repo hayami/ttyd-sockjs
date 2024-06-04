@@ -13,6 +13,10 @@ endif
 
 MAKEFLAGS += --no-print-directory
 
+export COREPACK_HOME = $(shell realpath -m ../ttyd-$(V)-yarn.cache/corepack)
+export COREPACK_DEFAULT_TO_LATEST = 0
+export COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
+
 
 .PHONY:	default
 default: both-inline.html
