@@ -1,0 +1,18 @@
+Date:   Mon Jan 15 22:43:40 2024 +0900
+
+    Fix: SockJS doesn't work with ws protocol
+    Ref. https://github.com/sockjs/sockjs-client/issues/452
+
+diff --git a/src/components/app.tsx b/src/components/app.tsx
+--- a/src/components/app.tsx
++++ b/src/components/app.tsx
+@@ -8,7 +8,7 @@ if ((module as any).hot) {
+     require('preact/debug');
+ }
+ 
+-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
++const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+ const path = window.location.pathname.replace(/[\/]+$/, '');
+ const wsUrl = [protocol, '//', window.location.host, path, '/ws', window.location.search].join('');
+ const tokenUrl = [window.location.protocol, '//', window.location.host, path, '/token'].join('');
+
