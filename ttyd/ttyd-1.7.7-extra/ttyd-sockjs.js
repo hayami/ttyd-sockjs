@@ -6,9 +6,9 @@ function TtydSockJS(url, protocols) {
     this.textEncoder = new TextEncoder();
     this.textDecoder = new TextDecoder();
 
-    this.onmessage_orig = function(event) {};
-    this.onmessage_hook = function(event) {
-        if (typeof(event.data) === 'string') {
+    this.onmessage_orig = function () {};
+    this.onmessage_hook = function (event) {
+        if (typeof event.data === 'string') {
             event.data = this.textEncoder.encode(event.data);
         } else {
             const fname = event.data.constructor.name;
@@ -16,16 +16,17 @@ function TtydSockJS(url, protocols) {
         }
         return this.onmessage_orig(event);
     };
-    Object.defineProperty(this, "onmessage", {
-        get: function() {
+    Object.defineProperty(this, 'onmessage', {
+        get: function () {
             return this.onmessage_hook;
         },
-        set: function(func) {
+        set: function (func) {
             this.onmessage_orig = func;
-        }
+        },
     });
 
-    const options = {};	// e.g. { transports: ["xhr-streaming", "xhr-polling"] }
+    // e.g. const options = { transports: ['xhr-streaming', 'xhr-polling'] };
+    const options = {};
     const pstr = JSON.stringify(protocols);
     const ostr = JSON.stringify(options);
     console.log(`[ttyd-sockjs] SockJS.call(this, ${url}, ${pstr}, ${ostr})`);
@@ -40,7 +41,7 @@ TtydSockJS.OPEN = SockJS.OPEN;
 TtydSockJS.CLOSING = SockJS.CLOSING;
 TtydSockJS.CLOSED = SockJS.CLOSED;
 
-TtydSockJS.prototype.send = function(data) {
+TtydSockJS.prototype.send = function (data) {
     if (data.constructor === Uint8Array) {
         data = this.textDecoder.decode(data);
     } else {

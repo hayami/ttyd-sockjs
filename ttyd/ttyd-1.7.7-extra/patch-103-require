@@ -1,16 +1,16 @@
-Date:   Mon Jan 15 22:24:52 2024 +0900
+Date: Mon Jan 15 22:24:52 2024 +0900
 
     add ttyd-sockjs.js and the code to use the file.
 
-diff --git a/src/components/terminal/index.tsx b/src/components/terminal/index.tsx
---- a/src/components/terminal/index.tsx
-+++ b/src/components/terminal/index.tsx
-@@ -12,6 +12,8 @@ import { ZmodemAddon, FlowControl } from '../zmodem';
- import 'xterm/css/xterm.css';
- import worker from 'xterm-addon-image/lib/xterm-addon-image-worker';
+diff --git a/src/components/terminal/xterm/index.ts b/src/components/terminal/xterm/index.ts
+--- a/src/components/terminal/xterm/index.ts
++++ b/src/components/terminal/xterm/index.ts
+@@ -12,6 +12,8 @@
  
-+const { TtydSockJS: WebSocket } = require('./ttyd-sockjs');
+ import '@xterm/xterm/css/xterm.css';
+ 
++const { TtydSockJS: WebSocket } = require('../../ttyd-sockjs');
 +
- const imageWorkerUrl = window.URL.createObjectURL(new Blob([worker], { type: 'text/javascript' }));
- 
  interface TtydTerminal extends Terminal {
+     fit(): void;
+ }

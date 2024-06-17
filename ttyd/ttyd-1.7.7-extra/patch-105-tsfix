@@ -1,0 +1,36 @@
+Date: (none)
+
+diff --git a/src/components/terminal/xterm/index.ts b/src/components/terminal/xterm/index.ts
+--- a/src/components/terminal/xterm/index.ts
++++ b/src/components/terminal/xterm/index.ts
+@@ -231,18 +231,19 @@
+             const payload = new Uint8Array(data.length * 3 + 1);
+             payload[0] = Command.INPUT.charCodeAt(0);
+             const stats = textEncoder.encodeInto(data, payload.subarray(1));
+-            socket.send(payload.subarray(0, (stats.written as number) + 1));
++            socket?.send(payload.subarray(0, (stats.written as number) + 1));
+         } else {
+             const payload = new Uint8Array(data.length + 1);
+             payload[0] = Command.INPUT.charCodeAt(0);
+             payload.set(data, 1);
+-            socket.send(payload);
++            socket?.send(payload);
+         }
+     }
+ 
+     @bind
+     public connect() {
+         this.socket = new WebSocket(this.options.wsUrl, ['tty']);
++        if (!this.socket) throw new Error('Could not create a socket.');
+         const { socket, register } = this;
+ 
+         socket.binaryType = 'arraybuffer';
+@@ -404,7 +405,7 @@
+                     break;
+                 case 'enableReconnect':
+                     if (value) {
+-                        console.log(`[ttyd] Reconnect enabled`);
++                        console.log('[ttyd] Reconnect enabled');
+                         this.reconnect = true;
+                         this.doReconnect = true;
+                     }

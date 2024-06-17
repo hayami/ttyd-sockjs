@@ -1,4 +1,4 @@
-V	= 1.7.2
+V	= 1.7.7
 ORIGTGZ	= https://github.com/tsl0922/ttyd/archive/refs/tags/$(V).tar.gz
 DIR	= ../ttyd-$(V)/html
 
@@ -72,7 +72,7 @@ $(DIR)/extra/inline-websocket.html: $(DIR)/extra/yarn.install.done
 
 $(DIR)/extra/patch-1xx.applied: $(DIR)/extra/yarn.install.done
 	$(MAKE) files='patch-1*' patch
-	install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/terminal/
+	install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/
 	touch $@
 
 $(DIR)/extra/inline-sockjs.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
