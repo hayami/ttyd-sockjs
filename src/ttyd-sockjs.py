@@ -8,9 +8,8 @@ from aiohttp import web, WSMsgType
 import sockjs
 
 
-ENABLED_HTML = open(os.path.join(os.path.dirname(__file__), 'inline-sockjs-enabled.html'), 'rb').read()
-
-UNUSED_HTML = open(os.path.join(os.path.dirname(__file__), 'inline-sockjs-unused.html'), 'rb').read()
+SOCKJS_HTML = open(os.path.join(os.path.dirname(__file__), 'html/sockjs/inline.html'), 'rb').read()
+WEBSOCKET_HTML = open(os.path.join(os.path.dirname(__file__), 'html/websocket/inline.html'), 'rb').read()
 
 class TtydServer:
     def __init__(self, once=False, use_sockjs=True):
@@ -19,9 +18,9 @@ class TtydServer:
 
     async def toppage_handler(self, request):
         if self.use_sockjs:
-            return web.Response(body=ENABLED_HTML, content_type='text/html')
+            return web.Response(body=SOCKJS_HTML, content_type='text/html')
         else:
-            return web.Response(body=UNUSED_HTML, content_type='text/html')
+            return web.Response(body=WEBSOCKET_HTML, content_type='text/html')
 
     async def token_handler(self, request):
         token = {'token': 'abc'}
