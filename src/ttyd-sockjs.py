@@ -51,10 +51,7 @@ class TtydServer:
         print('WebSoocket: connection closed')
         return ws
 
-    async def sockjs_handler(self, msg, session):
-        if session.manager is None:
-            return
-
+    async def sockjs_handler(self, manager, session, msg):
         if self.one_time_session:
             if self.one_time_session is True:
                 self.one_time_session = session
@@ -65,11 +62,11 @@ class TtydServer:
                 return
 
         match msg.type:
-            case sockjs.MSG_OPEN:
+            case sockjs.MsgType.OPEN:
                 print('SockJS: connection ready')
 
-            case sockjs.MSG_MESSAGE:
-                print('sockjs.MSG_MESSAGE: "%s"' % msg.data)
+            case sockjs.MsgType.MESSAGE:
+                print('sockjs.MsgType.MESSAGE: "%s"' % msg.data)
                 ret = self._chat(msg.data)
                 for data in ret:
                     if type(data) == str:
@@ -78,10 +75,10 @@ class TtydServer:
                         if data == 0:
                             session.close()
 
-            case sockjs.MSG_CLOSE:
+            case sockjs.MsgType.CLOSE:
                 print('SockJS: connection closing')
 
-            case sockjs.MSG_CLOSED:
+            case sockjs.MsgType.CLOSED:
                 print('SockJS: connection closed')
                 if self.one_time_session:
                     await session.manager.clear()
@@ -117,10 +114,10 @@ def main():
     app = web.Application()
     app.add_routes([web.get('/', ttyd.toppage_handler),
                     web.get('/token', ttyd.token_handler)])
-    if ttyd.use_sockjs:
-        sockjs.add_endpoint(app, ttyd.sockjs_handler, name='ttyd', prefix='/sockjs')
-    else:
+    if args.no_sockjs:
         app.add_routes([web.get('/ws', ttyd.websocket_handler)])
+    else:
+        sockjs.add_endpoint(app, ttyd.sockjs_handler, name='ttyd', prefix='/sockjs')
 
     if args.sockpath:
         web.run_app(app, path=args.sockpath)
