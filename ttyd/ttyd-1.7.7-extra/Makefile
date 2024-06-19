@@ -19,12 +19,25 @@ export COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
 
 
 .PHONY:	default
-default: both-inline.html
+default: all
 
-.PHONY:	both-inline.html
-both-inline.html:
-	$(MAKE) $(DIR)/extra/inline-websocket.html
-	$(MAKE) $(DIR)/extra/inline-sockjs.html
+.PHONY:	all
+all:
+	$(MAKE) websocket-html
+	$(MAKE) sockjs-html
+	$(MAKE) install
+
+.PHONY:	websocket-html
+websocket-html: $(DIR)/extra/ttyd-websocket.html
+
+.PHONY:	sockjs-html
+sockjs-html: $(DIR)/extra/ttyd-sockjs.html
+
+.PHONY:	install
+install:
+	test -d ../../src/html
+	install -m $(FMODE) $(DIR)/extra/ttyd-websocket.html ../../src/html
+	install -m $(FMODE) $(DIR)/extra/ttyd-sockjs.html    ../../src/html
 
 .PHONY:	clean
 clean:
@@ -65,7 +78,7 @@ $(DIR)/extra/yarn.install.done: $(DIR)/extra/patch-0xx.applied
 	mkdir -p $(@D)
 	touch $@
 
-$(DIR)/extra/inline-websocket.html: $(DIR)/extra/yarn.install.done
+$(DIR)/extra/ttyd-websocket.html: $(DIR)/extra/yarn.install.done
 	[ ! -f $(DIR)/extra/patch-1xx.applied ]
 	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
 	install -m $(FMODE) $(DIR)/dist/inline.html $@
@@ -75,7 +88,7 @@ $(DIR)/extra/patch-1xx.applied: $(DIR)/extra/yarn.install.done
 	install -m $(FMODE) ttyd-sockjs.js $(DIR)/src/components/
 	touch $@
 
-$(DIR)/extra/inline-sockjs.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
+$(DIR)/extra/ttyd-sockjs.html: $(DIR)/extra/yarn.install.done $(DIR)/extra/patch-1xx.applied
 	[ -f $(DIR)/extra/patch-1xx.applied ]
 	cd $(DIR) && yarn run $(YARN_RUN_TARGET)
 	install -m $(FMODE) $(DIR)/dist/inline.html $@
