@@ -5,11 +5,11 @@ import argparse
 import os
 
 from aiohttp import web, WSMsgType
-import sockjs
+import sockjs	# requires aio-libs/sockjs v0.13.0 (2024-06-13)
 
 
-SOCKJS_HTML = open(os.path.join(os.path.dirname(__file__), 'html/sockjs/inline.html'), 'rb').read()
-WEBSOCKET_HTML = open(os.path.join(os.path.dirname(__file__), 'html/websocket/inline.html'), 'rb').read()
+SOCKJS_HTML = open(os.path.join(os.path.dirname(__file__), 'html/ttyd-sockjs.html'), 'rb').read()
+WEBSOCKET_HTML = open(os.path.join(os.path.dirname(__file__), 'html/ttyd-websocket.html'), 'rb').read()
 
 class TtydServer:
     def __init__(self, once=False, use_sockjs=True):
