@@ -1,4 +1,5 @@
-/src/pip.pyz
+/src/html/ttyd-sockjs.html
+/src/html/ttyd-websocket.html
 /src/pyuser/
 /ttyd/ttyd-*.tar.gz
 /ttyd/ttyd-*/
