@@ -8,9 +8,6 @@ from aiohttp import web, WSMsgType
 import sockjs	# requires aio-libs/sockjs v0.13.0 (2024-06-13)
 
 
-SOCKJS_HTML = open(os.path.join(os.path.dirname(__file__), 'index.html'), 'rb').read()
-WEBSOCKET_HTML = open(os.path.join(os.path.dirname(__file__), 'index.html'), 'rb').read()
-
 class BrendaServer:
     def __init__(self, once=False, use_sockjs=True):
         self.one_time_session = bool(once)
@@ -18,9 +15,9 @@ class BrendaServer:
 
     async def toppage_handler(self, request):
         if self.use_sockjs:
-            return web.Response(body=SOCKJS_HTML, content_type='text/html')
+            return web.FileResponse('index.html')
         else:
-            return web.Response(body=WEBSOCKET_HTML, content_type='text/html')
+            return web.FileResponse('index.html')
 
     async def token_handler(self, request):
         token = {'token': 'abc'}
@@ -113,9 +110,10 @@ def main():
     brenda = BrendaServer(once=args.once, use_sockjs=not(args.no_sockjs))
     app = web.Application()
     app.add_routes([web.get('/', brenda.toppage_handler),
-                    web.get('/token', brenda.token_handler)])
+                    web.get('/token', brenda.token_handler),
+                    web.static('/npm/', 'npm')])
     if args.no_sockjs:
-        app.add_routes([web.get('/websocket', brenda.websocket_handler)])
+        app.add_routes([web.get('/ws', brenda.websocket_handler)])
     else:
         sockjs.add_endpoint(app, brenda.sockjs_handler, name='brenda', prefix='/sockjs')
 

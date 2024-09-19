@@ -25,6 +25,7 @@ install-xtermjs:
 
 pyuser	= $(PWD)/pyuser
 pyver	= 3.12
+args	= --host 127.0.0.1
 
 .PHONY:	run-server
 run-server:
