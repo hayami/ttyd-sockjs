@@ -13,12 +13,12 @@ xterm-files	= lib/xterm.js lib/xterm.min.js \
 		  css/xterm.css css/xterm.min.css
 
 install-xtermjs:
-	rm -rf xterm@$(xtermjs-version)
-	for f in $(xterm-files); do			\
-	    outfile=@xterm/xterm@$(xtermjs-version)/$$f;\
-	    url=$(xtermjs-url)/$$f;			\
-	    mkdir -p $$(dirname $$outfile) || ! break;	\
-	    curl -L -o $$outfile $$url     || ! break;	\
+	dir=npm/@xterm;						\
+	rm -rf $$dir;						\
+	for f in $(xterm-files); do				\
+	    outfile=$$dir/xterm@$(xtermjs-version)/$$f;		\
+	    mkdir -p $$(dirname $$outfile)          || ! break;	\
+	    curl -L -o $$outfile $(xtermjs-url)/$$f || ! break;	\
 	done
 
 
