@@ -100,22 +100,27 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--host',       default='::1', dest='host',      action='store',      help='IP address or hostname to bind to (default: ::1)')
+    parser.add_argument('--html-dir',   default=None,  dest='htmldir',   action='store',      help='XXX help message for --html-dir option')
     parser.add_argument('-i',           default=None,  dest='sockpath',  action='store',      help='UNIX domain socket path', metavar='PATH')
     parser.add_argument('--interface',  default=None,  dest='sockpath',  action='store',      help='(same as above)', metavar='PATH')
-    parser.add_argument('--no-sockjs',  default=False, dest='no_sockjs', action='store_true', help='Use WebSocket instead of SockJS')
+    parser.add_argument('--sockjs',     default=True,  dest='sockjs',    action='store_true', help='Use SockJS instead of WebSocket')
     parser.add_argument('-o', '--once', default=False, dest='once',      action='store_true', help='Accept only one client and exit on disconnection')
     parser.add_argument('-p', '--port', default=7681,  dest='port',      action='store',      help='Port number or name to listen (default: 7681)')
     args = parser.parse_args();
 
-    brenda = BrendaServer(once=args.once, use_sockjs=not(args.no_sockjs))
+
+    htmldir = os.path.abspath(args.htmldir) if args.htmldir else os.getcwd()
+    staticdir = os.path.join(htmldir, 'static')
+
+    brenda = BrendaServer(once=args.once, use_sockjs=args.sockjs)
     app = web.Application()
     app.add_routes([web.get('/', brenda.toppage_handler),
                     web.get('/token', brenda.token_handler),
-                    web.static('/npm/', 'npm')])
-    if args.no_sockjs:
-        app.add_routes([web.get('/ws', brenda.websocket_handler)])
-    else:
+                    web.static('/static/', staticdir)])
+    if args.sockjs:
         sockjs.add_endpoint(app, brenda.sockjs_handler, name='brenda', prefix='/sockjs')
+    else:
+        app.add_routes([web.get('/ws', brenda.websocket_handler)])
 
     if args.sockpath:
         web.run_app(app, path=args.sockpath)
