@@ -103,7 +103,7 @@ def main():
     parser.add_argument('--html-dir',   default=None,  dest='htmldir',   action='store',      help='XXX help message for --html-dir option')
     parser.add_argument('-i',           default=None,  dest='sockpath',  action='store',      help='UNIX domain socket path', metavar='PATH')
     parser.add_argument('--interface',  default=None,  dest='sockpath',  action='store',      help='(same as above)', metavar='PATH')
-    parser.add_argument('--sockjs',     default=True,  dest='sockjs',    action='store_true', help='Use SockJS instead of WebSocket')
+    parser.add_argument('--sockjs',     default=False,  dest='sockjs',    action='store_true', help='Use SockJS instead of WebSocket')
     parser.add_argument('-o', '--once', default=False, dest='once',      action='store_true', help='Accept only one client and exit on disconnection')
     parser.add_argument('-p', '--port', default=7681,  dest='port',      action='store',      help='Port number or name to listen (default: 7681)')
     args = parser.parse_args();

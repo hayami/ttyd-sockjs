@@ -12,10 +12,36 @@
     <div id="xterm"></div>
     <script>
       window.addEventListener("load", function() {
-          let xterm = new Terminal();
-          xterm.open(document.getElementById('xterm'));
-          xterm.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
-       });
+        const xterm = new Terminal();
+        xterm.open(document.getElementById('xterm'));
+        xterm.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+
+        const socket = new WebSocket('http://[::1]:7681/ws');
+        if (!socket) {
+          throw new Error('Could not create a socket');
+        }
+        socket.binaryType = 'arraybuffer';
+        socket.onerror = onSocketError;
+        socket.onopen = onSocketOpen;
+        socket.onclose = onSocketClose;
+        socket.onmessage = onSocketMessage;
+
+        function onSocketError(ev) {
+          throw new Error(`onSocketError code=${ev.code}`);
+        }
+
+        function onSocketOpen(ev) {
+          throw new Error(`onSocketOpen code=${ev.code}`);
+        }
+
+        function onSocketClose(ev) {
+          console.log(`[] socket connection closed with code: ${ev.code}`);
+        }
+
+        function onSocketMessage(ev) {
+          throw new Error(`onSocketMessage code=${ev.code}`);
+        }
+     });
     </script>
   </body>
 </html>

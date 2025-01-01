@@ -50,13 +50,15 @@ args	=
 
 .PHONY:	run-server
 run-server:
+	env -u LANGUAGE LANG=C.UTF-8 LC_ALL=C.UTF-8 \
 	PYTHONUSERBASE=$(PWD)/pyuser python$(pyver) undecidedname.py $(args)
 
 .PHONY:	install-py
 install-py:
 	$(MAKE) clean-py
-	PYTHONUSERBASE=$(PWD)/pyuser		\
-	PIP_CACHE_DIR=$(PWD/)pyuser/cache	\
+	env -u LANGUAGE LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+	PYTHONUSERBASE=$(PWD)/pyuser \
+	PIP_CACHE_DIR=$(PWD/)pyuser/cache \
 	pip$(pyver) install --user --no-cache-dir aiohttp sockjs
 
 .PHONY:	clean-py
