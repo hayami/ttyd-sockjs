@@ -1,5 +1,3 @@
-MAKEFLAGS += --no-print-directory
-
 .PHONY:	default
 default: run-server
 
@@ -10,7 +8,12 @@ install: install-js install-py
 clean: clean-js clean-py
 
 
-# client side
+MAKEFLAGS += --no-print-directory
+
+
+###
+### client side
+###
 js-url	= https://cdn.jsdelivr.net
 js-src	= npm/@xterm/xterm@5.5.0/css/xterm$(min).css		\
 	  npm/@xterm/xterm@5.5.0/lib/xterm$(min).js		\
@@ -28,7 +31,7 @@ install-js:
 
 .PHONY: _install-js-sub
 _install-js-sub:
-	for js in $(js-src); do					\
+	@for js in $(js-src); do					\
 	    echo "Installing: static/$$js";			\
 	    mkdir -p $$(dirname static/$$js)      || ! break;	\
 	    $(curl) -o static/$$js $(js-url)/$$js || ! break;	\
@@ -39,13 +42,15 @@ clean-js:
 	rm -rf static
 
 
-# server side
+###
+### server side
+###
 pyver	= 3.12
 args	=
 
 .PHONY:	run-server
 run-server:
-	PYTHONUSERBASE=$(PWD)/pyuser python$(pyver) brenda.py $(args)
+	PYTHONUSERBASE=$(PWD)/pyuser python$(pyver) undecidedname.py $(args)
 
 .PHONY:	install-py
 install-py:

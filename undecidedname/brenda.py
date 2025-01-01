@@ -8,16 +8,16 @@ from aiohttp import web, WSMsgType
 import sockjs	# requires aio-libs/sockjs v0.13.0 (2024-06-13)
 
 
-class BrendaServer:
+class UndecidedNameServer:
     def __init__(self, once=False, use_sockjs=True):
         self.one_time_session = bool(once)
         self.use_sockjs = bool(use_sockjs)
 
     async def toppage_handler(self, request):
         if self.use_sockjs:
-            return web.FileResponse('index.html')
+            return web.FileResponse('main.html')
         else:
-            return web.FileResponse('index.html')
+            return web.FileResponse('main.html')
 
     async def token_handler(self, request):
         token = {'token': 'abc'}
@@ -86,7 +86,7 @@ class BrendaServer:
 
     def _chat(self, data):
         if data[0] == '{':
-            return ['1/bin/sh (brenda-MIKADO)',
+            return ['1/bin/sh (UndecidedName-MIKADO)',
                     '2{}',
                     '0prompt$ ']
         else:
@@ -112,15 +112,15 @@ def main():
     htmldir = os.path.abspath(args.htmldir) if args.htmldir else os.getcwd()
     staticdir = os.path.join(htmldir, 'static')
 
-    brenda = BrendaServer(once=args.once, use_sockjs=args.sockjs)
+    undecided = UndecidedNameServer(once=args.once, use_sockjs=args.sockjs)
     app = web.Application()
-    app.add_routes([web.get('/', brenda.toppage_handler),
-                    web.get('/token', brenda.token_handler),
+    app.add_routes([web.get('/', undecided.toppage_handler),
+                    web.get('/token', undecided.token_handler),
                     web.static('/static/', staticdir)])
     if args.sockjs:
-        sockjs.add_endpoint(app, brenda.sockjs_handler, name='brenda', prefix='/sockjs')
+        sockjs.add_endpoint(app, undecided.sockjs_handler, name='undecided', prefix='/sockjs')
     else:
-        app.add_routes([web.get('/ws', brenda.websocket_handler)])
+        app.add_routes([web.get('/ws', undecided.websocket_handler)])
 
     if args.sockpath:
         web.run_app(app, path=args.sockpath)
