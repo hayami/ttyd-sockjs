@@ -1,0 +1,127 @@
+- URL examples to visit:
+    https://soba.undo.jp/a/b/c/-?sock=tmp/unix
+    https://soba.undo.jp/a/b/c/-/?sock=tmp/unix
+    https://soba.undo.jp/a/b/c/-/info?sock=tmp/unix
+
+- URL examples to visit:
+    http://localhost:7681/
+    http://[::1]:7681/
+
+
+- tcpdump usage example
+    $ sudo tcpdump -s 0 -w tcpdump.out tcp port 80
+
+
+- Sed replace pattern with line number
+    $ awk '{gsub("###",NR,$0);print}'
+
+
+- HTTP Proxy using the 'stone'
+    $ ssh -L 8080:localhost:28080 soba.undo.jp stone proxy 28080
+
+
+================================================================================
+
+SockJS
+------
+  - Helpful debug usage examples:
+	cd $HOME/tmp/ttyd-sockjs.git/src && make args='-i ~/tmp/unix' run
+	cd $HOME/tmp/ttyd-sockjs.git/src && make args='--no-sockjs' run
+
+  - URL examples to visit:
+	https://soba.undo.jp/a/b/c/-?sock=tmp/unix
+	https://soba.undo.jp/a/b/c/-/?sock=tmp/unix
+	https://soba.undo.jp/a/b/c/-/info?sock=tmp/unix
+
+
+WebSocket
+---------
+  - Helpful debug usage examples:
+	cd $HOME/tmp/ttyd-sockjs.git/src && make args='--no-sockjs' run
+
+  - URL examples to visit:
+	http://localhost:7681/
+	http://[::1]:7681/
+
+
+
+
+$ sudo tcpdump -s 0 -w tcpdump.out tcp port 80
+
+
+
+
+awk '{gsub("###",NR,$0);print}'
+
+
+
+XXX: _start: finish 200 {"entropy": 1472731436, "websocket": true, "cookie_needed": true, "origins": ["*:*"]} localhost:8000:formatted:1398:26
+XXX InfoAjax: finish	>> Object { entropy: 1472731436, websocket: true, cookie_needed: true, origins: (1) […] }
+			>> 15 localhost:8000:formatted:650:22
+doXhr: XXX: finish	>> Object { entropy: 1472731436, websocket: true, cookie_needed: true, origins: (1) […] }
+			>> 15
+
+
+XXX: _start: finish 0 <empty string> localhost:8000:formatted:1398:26
+XXX InfoAjax: finish undefined undefined localhost:8000:formatted:650:22
+doXhr: XXX: finish undefined undefined
+
+
+
+
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-15-
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-16-  var self = this;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-17-  var t0 = +new Date();
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js:18:  console.log('XXX InfoAjax: new AjaxObject(GET, ', url);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-19-  this.xo = new AjaxObject('GET', url);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-20-
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-21-  this.xo.once('finish', function(status, text) {
+--
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-34-        info = {};
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-35-      }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-36-    }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js:37:    console.log('XXX InfoAjax: finish', info, rtt)
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-38-    self.emit('finish', info, rtt);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-39-    self.removeAllListeners();
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-ajax.js-40-  });
+--
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-62-  }, InfoReceiver.timeout);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-63-
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-64-  this.xo.once('finish', function(info, rtt) {
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js:65:    console.log('XXX: doXhr: finish', info, rtt);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-66-    self._cleanup(true);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-67-    self.emit('finish', info, rtt);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/info-receiver.js-68-  });
+--
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-108-        }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-109-        break;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-110-      case 4:
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js:111:        console.log('XXX: _start: case 4, x.status=', x.status);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-112-        status = x.status;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-113-        debug('status', status);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-114-        // IE returns 1223 for 204: http://bugs.jquery.com/ticket/1450
+--
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-121-          status = 0;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-122-        }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-123-
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js:124:        console.log('XXX: _start: finish', status, x.responseText);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-125-        if (status === 0) { console.trace(); }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-126-        self.emit('finish', status, x.responseText);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js-127-        self._cleanup(false);
+--
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-177-  debug('_receiveInfo', rtt);
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-178-  this._ir = null;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-179-  if (!info) {
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js:180:    console.log('XXX 1002 Cannot connect to server');
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-181-    this._close(1002, 'Cannot connect to server');
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-182-    return;
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-183-  }
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js:184:  console.log('XXX NOT 1002 Cannot connect to server');
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-185-
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-186-  // establish a round-trip timeout (RTO) based on the
+../ttyd-1.7.2/html/node_modules/sockjs-client/lib/main.js-187-  // round-trip time (RTT)
+					    if (forceFail || (code || 1000) != 1000) {
+
+https://github.com/sockjs/sockjs-client/issues/176
+socket = new SockJS('https://URLHERE/echo', null, { heartbeatTimeout: 65000 });
+
