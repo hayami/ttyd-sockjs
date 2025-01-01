@@ -1,0 +1,273 @@
+Metadata-Version: 2.1
+Name: sockjs
+Version: 0.13.0
+Summary: SockJS server implementation for aiohttp.
+Home-page: https://github.com/aio-libs/sockjs/
+Author: Nikolay Kim
+Author-email: fafhrd91@gmail.com
+License: Apache 2
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Framework :: AsyncIO
+Requires-Python: >=3.10.0
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: aiohttp >=3.7.4
+Requires-Dist: async-timeout >=4.0.3
+Provides-Extra: test
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: multidict ; extra == 'test'
+Requires-Dist: yarl ; extra == 'test'
+Requires-Dist: pytest-aiohttp ; extra == 'test'
+Requires-Dist: pytest-mock ; extra == 'test'
+Requires-Dist: pytest-timeout ; extra == 'test'
+Requires-Dist: cykooz.testing ; extra == 'test'
+Requires-Dist: aiohttp-cors ; extra == 'test'
+
+SockJS server based on Asyncio (PEP 3156)
+=========================================
+
+.. image:: https://travis-ci.com/aio-libs/sockjs.svg?branch=master
+    :target: https://travis-ci.com/aio-libs/sockjs
+
+`sockjs` is a `SockJS <http://sockjs.org>`_ integration for
+`aiohttp <https://github.com/aio-libs/aiohttp/>`_.  SockJS interface
+is implemented as a `aiohttp` route. Its possible to create any number
+of different sockjs routes, ie `/sockjs/*` or
+`/mycustom-sockjs/*`. You can provide different session implementation
+and management for each sockjs route.
+
+Simple aiohttp web server is required::
+
+   [server:main]
+   use = egg:gunicorn#main
+   host = 0.0.0.0
+   port = 8080
+   worker = aiohttp.worker.GunicornWebWorker
+
+
+Example of sockjs route::
+
+   def main(global_settings, **settings):
+       app = web.Application()
+       app.router.add_route('GET', '/', index)
+       sockjs.add_endpoint(app, prefix='/sockjs', handler=chatSession)
+       web.run_app(app)
+
+Client side code::
+
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script>
+    var sock = new SockJS('http://localhost:8080/sockjs');
+
+    sock.onopen = function() {
+      console.log('open');
+      sock.send('test');
+    };
+
+    sock.onmessage = function(e) {
+      console.log('message', e.data);
+      sock.close();
+    };
+
+    sock.onclose = function() {
+      console.log('close');
+    };
+  </script>
+
+Supported transports
+--------------------
+
+* websocket `hybi-10
+  <http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10>`_
+* `xhr-streaming
+  <https://secure.wikimedia.org/wikipedia/en/wiki/XMLHttpRequest#Cross-domain_requests>`_
+* `xhr-polling
+  <https://secure.wikimedia.org/wikipedia/en/wiki/XMLHttpRequest#Cross-domain_requests>`_
+* `iframe-xhr-polling
+  <https://developer.mozilla.org/en/DOM/window.postMessage>`_
+* iframe-eventsource (`EventSource
+  <http://dev.w3.org/html5/eventsource/>`_ used from an `iframe via
+  postMessage
+  <https://developer.mozilla.org/en/DOM/window.postMessage>`_)
+* iframe-htmlfile (`HtmlFile
+  <http://cometdaily.com/2007/11/18/ie-activexhtmlfile-transport-part-ii/>`_
+  used from an *iframe via postMessage*.
+* `jsonp-polling <https://secure.wikimedia.org/wikipedia/en/wiki/JSONP>`_
+
+
+Requirements
+------------
+
+- Python 3.10.0
+
+- gunicorn 19.2.0
+
+- aiohttp https://github.com/aio-libs/aiohttp
+
+
+Examples
+--------
+
+You can find several `examples` in the sockjs repository at github.
+
+https://github.com/aio-libs/sockjs/tree/master/examples
+
+
+License
+-------
+
+sockjs is offered under the Apache 2 license.
+
+=======
+CHANGES
+=======
+
+0.13.0 (2024-06-13)
+-------------------
+
+- Added argument ``cors_config`` into function ``add_endpoint()``
+  to support of CORS settings from ``aiohttp_cors``.
+- Added arguments ``heartbeat_delay`` and ``disconnect_delay``
+  into function ``add_endpoint()``.
+- Function ``add_endpoint()`` now returns all registered routes.
+- Replaced returning instances of error HTTP responses
+  on raising its as exceptions.
+- Changed name of some routes.
+- Heartbeat task moved from ``SessionManager`` into ``Session``.
+- Methods ``_acquire`` and ``_release`` of ``Sessions`` renamed into
+  ``acquire`` and ``release``.
+- Added processing of ``ConnectionError`` in ``StreamingTransport``.
+- Changed arguments of handler function. Now handler function must be defined
+  like ``async def handler(manager, session, msg):``
+- Constants:
+
+  - FRAME_OPEN
+  - FRAME_CLOSE
+  - FRAME_MESSAGE
+  - FRAME_MESSAGE_BLOB
+  - FRAME_HEARTBEAT
+
+  replaced by ``Frame`` enums with corresponding values.
+- Constants:
+
+  - MSG_OPEN
+  - MSG_MESSAGE
+  - MSG_CLOSE
+  - MSG_CLOSED
+
+  replaced by ``MsgType`` enums with corresponding values.
+- Constants:
+
+  - STATE_NEW
+  - STATE_OPEN
+  - STATE_CLOSING
+  - STATE_CLOSED
+
+  replaced by ``SessionState`` enums with corresponding values.
+
+
+0.12.0 (2022-02-08)
+-------------------
+
+- **Breaking change:** Removed argument ``timeout`` from ``Session.__init__()``
+  and ``SessionManager.__init__()``.
+- **Breaking change:** Argument ``heartbeat`` of ``SessionManager.__init__()``
+  renamed into ``heartbeat_delay``.
+- **Breaking change:** ``Session.registry`` renamed into ``Session.app``.
+- **Breaking change:** Deleted method ``SessionManager.route_url()``.
+- **Breaking change:** Dropped support of Python < 3.7
+- Fixed processing of heartbeats and a session expiration.
+- Fixed ping-pong based heartbeats for web-socket connections.
+- Added arguments ``heartbeat_delay`` and ``disconnect_delay`` into
+  ``Session.__init__()``.
+- Added argument ``disconnect_delay`` into ``SessionManager.__init__()``.
+
+0.11.0 (2020-10-22)
+-------------------
+
+- **Breaking change:** Added into the WebSocketTransport the ability
+  to process multi messages from client (#383).
+- Added into WebSocketTransport ignoring of empty frames received
+  from client. (#383).
+- Added tick after dequeue so heartbeat keeps session live (#265).
+- Fix race condition during iteration over sessions (#217).
+- Support Python 3.8.
+- Fixed examples of using of SockJS server (#264).
+
+0.10.0 (2019-10-20)
+-------------------
+
+- Sync with aiohttp 3.6 (#298)
+
+0.9.1 (2018-12-04)
+------------------
+
+- Minor code styling cleanups
+
+0.9.0 (2018-10-11)
+------------------
+
+- Support Python 3.7. The minimal available Python version is 3.5.3 (#240)
+
+0.8.0 (2018-06-15)
+------------------
+
+- Fix heartbeat (#214)
+
+0.7.1 (2018-03-05)
+------------------
+
+- Fix compatibility with aiohttp 3.0+ again.
+
+0.7.0 (2018-02-25)
+------------------
+
+- Fixed compatibility with aiohttp 3.0+ (#169)
+
+0.6 (2017-04-13)
+----------------
+
+- Fixed support for aiohttp 2.0+.
+
+0.5 (2016-09-26)
+----------------
+
+- Mark SockJSRoute.handler and SockJSRoute.websocket as coroutines. #25
+
+- Remove a check for "ORIGIN" header #12
+
+- Process FRAME_MESSAGE_BLOB message type #12
+
+0.4 (2016-02-04)
+----------------
+
+- Fixed lost event-loop argument in `sockjs.transports.websocket.WebSocketTransport`
+- Fixed lost event-loop argument in `sockjs.transports.rawwebsocket.RawWebSocketTransport`
+- Fixed RawRequestMessage. Add raw_header argument (aiohttp 0.21+)
+- Fixed many warnings
+- Fixed `sockjs.route` add_endpoint without name bug
+
+0.3 (2015-08-07)
+----------------
+
+- Fixed calls of ``SessionManager.aquire()`` - was removed the unnecessary second argument.
+- Fixed the incorrect argument in one call of ``cors_headers()``.
+- Fixed many errors. The code is not perfect, but at least it was working as it should.
+
+0.2 (2015-07-07)
+----------------
+
+- Fixed packaging
+
+0.1.0 (2015-06-21)
+------------------
+
+- Initial release
