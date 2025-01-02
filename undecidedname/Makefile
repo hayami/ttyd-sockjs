@@ -20,6 +20,7 @@ js-src	= npm/@xterm/xterm@5.5.0/css/xterm$(min).css		\
 	  npm/@xterm/addon-fit@0.10.0/lib/addon-fit$(min).js	\
 	  npm/sockjs-client@1.6.1/dist/sockjs$(min).js
 js-min	= '' .min
+js-map	= true
 curl	= curl --no-progress-meter -L
 
 .PHONY: install-js
@@ -31,10 +32,18 @@ install-js:
 
 .PHONY: _install-js-sub
 _install-js-sub:
-	@for js in $(js-src); do					\
+	@for js in $(js-src); do				\
 	    echo "Installing: static/$$js";			\
 	    mkdir -p $$(dirname static/$$js)      || ! break;	\
 	    $(curl) -o static/$$js $(js-url)/$$js || ! break;	\
+	    [ "$(js-map)" = "true" ] || continue;		\
+	    case "$$js" in					\
+	    *.min.js) ;;					\
+	    *.js)						\
+	        echo "Installing: static/$$js.map";		\
+	        $(curl) -o static/$$js.map			\
+	                $(js-url)/$$js.map || ! break ;;	\
+	    esac;						\
 	done
 
 .PHONY: clean-js
