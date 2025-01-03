@@ -60,7 +60,7 @@ args	=
 .PHONY:	run-server
 run-server:
 	env -u LANGUAGE LANG=C.UTF-8 LC_ALL=C.UTF-8 \
-	PYTHONUSERBASE=$(PWD)/pyuser python$(pyver) undecidedname.py $(args)
+	PYTHONUSERBASE=$(PWD)/pyuser python$(pyver) terminalserver.py $(args)
 
 .PHONY:	install-py
 install-py:

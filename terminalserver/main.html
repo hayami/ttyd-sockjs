@@ -14,10 +14,10 @@
     <script>
       window.addEventListener("load", function() {
         const command = {
-          // client side
+          // from client to server
           INPUT: 'I',
 
-          // server side
+          // from server to client
           OUTPUT: 'O',
         }
 
@@ -41,7 +41,7 @@
           throw new Error('onTerminalBinary: unexpected call');
         }
 
-        const socket = new WebSocket('http://[::1]:7681/ws');
+        const socket = new WebSocket('ws');
         socket.binaryType = 'arraybuffer';
         socket.onerror = onSocketError;
         socket.onopen = onSocketOpen;
@@ -70,6 +70,8 @@
 
 
 <!--
+	ASSERTION FAILED: should not be reached here
+
 	terminal.on*
 	------------
 	terminal.onBell
