@@ -118,7 +118,7 @@ def main():
                     web.get('/token', terminalServer.token_handler),
                     web.static('/static/', staticdir)])
     if args.sockjs:
-        sockjs.add_endpoint(app, terminalServer.sockjs_handler, name='terminalServer', prefix='/sockjs')
+        sockjs.add_endpoint(app, terminalServer.sockjs_handler, name='terminalserver', prefix='/sockjs')
     else:
         app.add_routes([web.get('/ws', terminalServer.websocket_handler)])
 
