@@ -85,12 +85,12 @@ class TerminalServer:
                 print('FIXME: SockJS: unknown msg.type: %d' % msg.type)
 
     def _chat(self, data):
-        if data[0] == '{':
-            return ['1/bin/sh (TerminalServer-MIKADO)',
-                    '2{}',
-                    '0prompt$ ']
+        if data[0] == 'A':
+            return ['O/bin/sh (TerminalServer-MIKADO)',
+                    'O{}',
+                    'Oprompt$ ']
         else:
-            return ['0{}'.format(data[1:])]
+            return ['O{}'.format(data[1:])]
 
 
 def main():

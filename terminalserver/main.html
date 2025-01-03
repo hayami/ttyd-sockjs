@@ -2,19 +2,44 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>xterm.js</title>
     <link rel="stylesheet" href="static/npm/@xterm/xterm@5.5.0/css/xterm.css" />
     <script src="static/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
     <script src="static/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
     <script src="static/npm/sockjs-client@1.6.1/dist/sockjs.js"></script>
-    <title>xterm.js</title>
-  </style>
+    <style>
+      html, body {
+        height: 100%;
+        min-height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      #tty {
+        width: auto;
+        height: 100%;
+        margin: 0 auto;
+        padding: 0;
+        .terminal {
+          padding: 5px;
+          height: calc(100% - 10px);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="tty"></div>
     <script>
       window.addEventListener("load", function() {
+
+        const clientOptions = {
+          fontFamily: 'monospace',
+          cursorBlink: true,
+        }
+
         const command = {
           // from client to server
+          AUTH: 'A',
           INPUT: 'I',
 
           // from server to client
@@ -23,16 +48,21 @@
 
         const textEncoder = new TextEncoder();
 
-        const terminal = new Terminal({ cursorBlink: true });
+        const terminal = new Terminal(clientOptions);
         terminal.open(document.getElementById('tty'));
-        terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
         terminal.onData(onTerminalData);
         terminal.onBinary(onTerminalBinary);
+
+        const fitAddon = new FitAddon.FitAddon();
+        terminal.loadAddon(fitAddon);
+        fitAddon.fit();
+
+        terminal.write('Connecting to the terminal server');
 
         function onTerminalData(data) {
           if (!socket || socket.readyState !== socket.OPEN) return;
           if (typeof data !== 'string') {
-            throw new Error('onTerminalData: unexpected data type: ' + (typeof data));
+            throw new Error(`onTerminalData: unexpected data type: ${typeof data}`);
           }
           socket.send(textEncoder.encode(command.INPUT + data));
         }
@@ -53,16 +83,41 @@
         }
 
         function onSocketOpen(ev) {
-          // throw new Error(`onSocketOpen code=${ev.code}`);
+          console.log('[terminalserver] socket connection opened');
+
+          const msg = JSON.stringify({
+            AuthToken: 'XXX TOKEN XXX',
+            columns: terminal.cols,
+            rows: terminal.rows
+          });
+
+          socket.send(textEncoder.encode(command.AUTH + msg));
+
+          terminal.reset();
+          /* 効果未確認 */ terminal.focus();
         }
 
         function onSocketClose(ev) {
-          console.log('[] socket connection closed with code: ' + ev.code);
+          console.log(`[terminalserver] socket connection closed with code: ${ev.code}`);
         }
 
         function onSocketMessage(ev) {
-          throw new Error(`onSocketMessage code=${ev.code}`);
+          if (!(ev.data instanceof ArrayBuffer)) {
+            throw new Error('ASSERTION FAILED: unexpected data type');
+          }
+          const buf = new Uint8Array(ev.data);
+          const cmd = String.fromCharCode(buf[0]);
+          const data = buf.slice(1);
+
+          switch (cmd) {
+          case command.OUTPUT:
+            terminal.write(data);
+            break;
+          default:
+            throw new Error('onSocketMessage: cmd=' + cmd);
+          }
         }
+
      });
     </script>
   </body>
