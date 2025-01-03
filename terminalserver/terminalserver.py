@@ -8,7 +8,7 @@ from aiohttp import web, WSMsgType
 import sockjs	# requires aio-libs/sockjs v0.13.0 (2024-06-13)
 
 
-class UndecidedNameServer:
+class TerminalServer:
     def __init__(self, once=False, use_sockjs=True):
         self.one_time_session = bool(once)
         self.use_sockjs = bool(use_sockjs)
@@ -86,7 +86,7 @@ class UndecidedNameServer:
 
     def _chat(self, data):
         if data[0] == '{':
-            return ['1/bin/sh (UndecidedName-MIKADO)',
+            return ['1/bin/sh (TerminalServer-MIKADO)',
                     '2{}',
                     '0prompt$ ']
         else:
@@ -112,15 +112,15 @@ def main():
     htmldir = os.path.abspath(args.htmldir) if args.htmldir else os.getcwd()
     staticdir = os.path.join(htmldir, 'static')
 
-    undecided = UndecidedNameServer(once=args.once, use_sockjs=args.sockjs)
+    terminalServer = TerminalServer(once=args.once, use_sockjs=args.sockjs)
     app = web.Application()
-    app.add_routes([web.get('/', undecided.toppage_handler),
-                    web.get('/token', undecided.token_handler),
+    app.add_routes([web.get('/', terminalServer.toppage_handler),
+                    web.get('/token', terminalServer.token_handler),
                     web.static('/static/', staticdir)])
     if args.sockjs:
-        sockjs.add_endpoint(app, undecided.sockjs_handler, name='undecided', prefix='/sockjs')
+        sockjs.add_endpoint(app, terminalServer.sockjs_handler, name='terminalServer', prefix='/sockjs')
     else:
-        app.add_routes([web.get('/ws', undecided.websocket_handler)])
+        app.add_routes([web.get('/ws', terminalServer.websocket_handler)])
 
     if args.sockpath:
         web.run_app(app, path=args.sockpath)
