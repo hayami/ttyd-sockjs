@@ -15,9 +15,9 @@ class TerminalServer:
 
     async def toppage_handler(self, request):
         if self.use_sockjs:
-            return web.FileResponse('main.html')
+            return web.FileResponse('static/terminal.html')
         else:
-            return web.FileResponse('main.html')
+            return web.FileResponse('static/terminal.html')
 
     async def token_handler(self, request):
         token = {'token': 'abc'}

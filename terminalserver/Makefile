@@ -48,7 +48,7 @@ _install-js-sub:
 
 .PHONY: clean-js
 clean-js:
-	rm -rf static
+	rm -rf static/npm
 
 
 ###
