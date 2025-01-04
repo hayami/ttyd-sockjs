@@ -15,7 +15,7 @@
         overflow: hidden;
       }
 
-      #tty {
+      #terminal-container {
         width: auto;
         height: 100%;
         margin: 0 auto;
@@ -28,7 +28,7 @@
     </style>
   </head>
   <body>
-    <div id="tty"></div>
+    <div id="terminal-container"></div>
     <script>
       window.addEventListener("load", function() {
 
@@ -49,7 +49,7 @@
         const textEncoder = new TextEncoder();
 
         const terminal = new Terminal(clientOptions);
-        terminal.open(document.getElementById('tty'));
+        terminal.open(document.getElementById('terminal-container'));
         terminal.onData(onTerminalData);
         terminal.onBinary(onTerminalBinary);
 

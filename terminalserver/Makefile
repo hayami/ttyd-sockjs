@@ -15,10 +15,10 @@ MAKEFLAGS += --no-print-directory
 ### client side
 ###
 js-url	= https://cdn.jsdelivr.net
-js-src	= npm/@xterm/xterm@5.5.0/css/xterm$(min).css		\
-	  npm/@xterm/xterm@5.5.0/lib/xterm$(min).js		\
-	  npm/@xterm/addon-fit@0.10.0/lib/addon-fit$(min).js	\
-	  npm/sockjs-client@1.6.1/dist/sockjs$(min).js
+# Extract strings corresponding to ^^^: ="static/npm/------(.min).---"
+#                                                ^^^^^^^^^^      ^^^^
+js-src	= $(shell sed -E -n 's!.*="static/(npm/[^"]*)".*!\1!p'	\
+	< main.html | sed -E 's/([.]min)?[.]([a-z]+)$$/$${min}.\2/')
 js-min	= '' .min
 js-map	= true
 curl	= curl --no-progress-meter -L
