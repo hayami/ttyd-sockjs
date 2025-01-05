@@ -25,7 +25,7 @@ window.addEventListener("load", function() {
   terminal.loadAddon(fitAddon);
   fitAddon.fit();
 
-  terminal.write('Connecting to the terminal server');
+  terminal.write('Connecting to the terminal server ');
 
   function onTerminalData(data) {
     if (!socket || socket.readyState !== socket.OPEN) return;

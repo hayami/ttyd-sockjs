@@ -1,3 +1,12 @@
+https://docs.python.org/ja/3.13/library/pty.html
+https://blog.konpat.me/dev/2016/09/03/pythons-pseudo-terminal-pty-examples.html
+https://xtermjs.org/docs/
+http://[::1]:7681/
+https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.StreamResponse.cookies
+
+
+
+
 - URL examples to visit:
     https://soba.undo.jp/a/b/c/-?sock=tmp/unix
     https://soba.undo.jp/a/b/c/-/?sock=tmp/unix
