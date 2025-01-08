@@ -55,19 +55,20 @@ clean-js:
 ### server side
 ###
 pyver	= 3.12
-args	=
-run-lang= env -u LANGUAGE LANG=C.UTF-8 LC_ALL=C.UTF-8
+python	= python$(pyver)
+env-lang= env -u LANGUAGE LANG=C.UTF-8 LC_ALL=C.UTF-8
+run-args=
 
 .PHONY:	run-server
 run-server:
-	$(run-lang) PYTHONUSERBASE=$(PWD)/pyuser \
-	python$(pyver) terminalserver.py $(args)
+	$(env-lang) PYTHONUSERBASE=$(PWD)/pyuser \
+	$(python) terminalserver.py $(run-args)
 
 .PHONY:	install-py
 install-py:
 	$(MAKE) clean-py
-	$(run-lang) PYTHONUSERBASE=$(PWD)/pyuser PIP_CACHE_DIR=$(PWD)/pipcache \
-	pip$(pyver) install --user --no-cache-dir aiohttp sockjs
+	$(env-lang) PYTHONUSERBASE=$(PWD)/pyuser PIP_CACHE_DIR=$(PWD)/pipcache \
+	$(python) -m pip install --user --no-cache-dir aiohttp sockjs
 
 .PHONY:	clean-py
 clean-py:
